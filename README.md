@@ -7,18 +7,24 @@ The screen saver requires `curses` and `python3.10+`. Python can be downloaded f
 pip install curses
 ```
 
-## Configuration
-The following values can be configured in `randomwalk.py`:
+## Arguments
+All of the following arguments are optional:
+|Abbreviation|Name|Description|Default|Range|
+|------------|----|-----------|-------|-----|
+|-n|--walkers|number of random walkers|7|[1-7]|
+|-b|--bias|bias to stay in the same direction|1|[0-100]|
+|-nw|--nowrap|make walkers incapable of wrapping around the screen|
+|-fps|--framerate|target frame rate|60|[10-500]|
+|-h|--help|show the help message|
+
+For example:
 ```
-10 target_fps:int   = 60 # target frames per second
-11 walkers:int      = 7 # number of random walkers [1 to 7]
-12 samedir_bias:int = 10 # bias to stay in the same direction [0 to 100]
-13 wrap:bool        = True # if paths can wrap around the screen
+python3.10 randomwalk.py -n 5 --framerate 100 # 5 walkers at 100 FPS
 ```
+
 ## Controls
 |Key|Action|
 |---|------|
 |q or ctrl+C|exit|
 |space|pause|
 |r|restart|
-|c|toggle colors|
