@@ -4,13 +4,22 @@ import curses # for i/o
 from random import randint,choice,shuffle # to generate random apple position
 from datetime import datetime # to manage frame rate
 from time import sleep #      ^
+import argparse # to parse
 
-# CONFIGURATION ===================================================================================
+# PARSE ARGS ======================================================================================
 
-target_fps:int   = 60 # target frames per second
-walkers:int      = 7 # number of random walkers [1 to 7]
-samedir_bias:int = 10 # bias to stay in the same direction [0 to 100]
-wrap:bool        = True # if paths can wrap around the screen
+parser = argparse.ArgumentParser(prog='RandomWalk',
+    description='A terminal-based screen saver using random walks written in Python.')
+
+parser.add_argument('-n','--walkers',type=int,default=7,help='number of random walkers [1 to 7]')
+parser.add_argument(
+    '-b','--bias',type=int,default=1,help='bias to stay in the same direction [0 to 100]')
+parser.add_argument('-nw','--nowrap',type=bool, 
+action=argparse.BooleanOptionalAction,help='make walkers incapable of wrapping around the screen')
+parser.add_argument('-fps','--framerate',type=int,default=60,help='target frame rate [10 to 500]')
+
+args = parser.parse_args(); walkers:int = args.walkers; samedir_bias:int = args.bias
+wrap:bool = not args.nowrap; target_fps:int = args.framerate
 
 # FUNCTIONS =======================================================================================
 
@@ -38,7 +47,6 @@ if __name__ == '__main__':
     curses.start_color(); curses.use_default_colors() # use ansi colors
     curses.cbreak(); curses.noecho(); stdscr.nodelay(True) # make getch() nonblocking
     curses.curs_set(0); stdscr.keypad(True) # hide mouse and allow keyboard input
-    target_frametime = 1/target_fps # target time per frame in seconds
 
     paused:bool = False
     f,w,h = init_dimens(stdscr) # get dimens
@@ -47,16 +55,17 @@ if __name__ == '__main__':
     color_lookup = {1:curses.COLOR_RED, 2:curses.COLOR_GREEN, 3:curses.COLOR_YELLOW,
             4:curses.COLOR_BLUE, 5:curses.COLOR_MAGENTA, 6:curses.COLOR_CYAN, 7:curses.COLOR_WHITE}
                     
-    for i in range(1,8): curses.init_pair(i,color_lookup[i],-1) # generat ansii colors
+    for i in range(1,8): curses.init_pair(i,color_lookup[i],-1) # generate ansii colors
 
+    walkers:int = max(1,min(7,walkers)); samedir_bias:int = max(0,min(100,samedir_bias)) # clamp
+    target_fps = max(10,min(500,target_fps)); target_frametime = 1/target_fps
+    
     list_colors:list[int] = [_ for _ in range(0,7)]; shuffle(list_colors) # list of ansii colors
     list_d:list[str] = [choice(['u','d','l','r']) for _ in range(walkers)] # directions of walkers
     list_walkers:list[[int,int]] = [random_pos(w,h) for _ in range(walkers)] # walker positions
     list_prevd:list[str] = list_d[:] # list of previous walker positions
     length:int = w*h//(3+walkers) # maximum length of a walker's path before it starts clearing
 
-    target_fps = max(1,min(500,target_fps))
-    walkers:int = max(1,min(8,walkers)); samedir_bias:int = max(0,min(100,samedir_bias)) # clamp
 
 # EVENT LOOP ======================================================================================
 
