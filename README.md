@@ -9,7 +9,7 @@ pip install curses
 
 ## Arguments
 All of the following arguments are optional:
-|Abbreviation|Name|Description|Default|Range|
+|Alias|Name|Description|Default|Range|
 |------------|----|-----------|-------|-----|
 |-n|--walkers|number of random walkers|7|[1-7]|
 |-b|--bias|bias to stay in the same direction|1|[0-100]|
